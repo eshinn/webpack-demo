@@ -7,27 +7,47 @@ PATHS =
   app: "#{__dirname}/app"
   build: "#{__dirname}/build"
 
+console.log "FYI: TARGET is #{TARGET}"
+
+
 BUILD =
 
   common:
-
     entry:
       app: PATHS.app
-
     output:
       path: PATHS.build
       filename: '[name].js'
-
+    module:
+      loaders: [
+        { test: /\.css$/, loaders:['style','css'], include: PATHS.app }
+      ]
     plugins: [
       new HtmlWebPackPlugin title: 'Webpack demo'
-      
-      if TARGET is 'dev'
-        new webpack.HotModuleReplacementPlugin multiStep: true
-    ]
+    ].concat switch TARGET
 
+      when 'build' then [
+        new webpack.HotModuleReplacementPlugin
+          multiStep: true
+        new webpack.optimize.UglifyJsPlugin
+          compress:
+            warnings: false
+          mangle:
+            props: /matching_props/
+            except: [
+              'Array'
+              'BigInteger'
+              'Boolean'
+              'Buffer'
+            ]
+        new webpack.DefinePlugin
+          'process.env.NODE_ENV': 'production'
+      ]
+
+      when 'dev' then [
+      ]
 
   dev:
-
     devServer:
       historyApiFallback: true
       hot: true
@@ -38,15 +58,13 @@ BUILD =
         process.env.HOST
       port:
         process.env.PORT
+    devtool: 'eval-source-map'
 
 
-  prod:
-
-    {}
 
 
 
 #module.exports = validate build TARGET
-do ({common, "#{TARGET}": target} = BUILD) ->
-  target[key] = val for key, val of common
-  module.exports = validate target
+do ({common: build, "#{TARGET}": target} = BUILD) ->
+  build[key] = val for key, val of target
+  module.exports = validate build
