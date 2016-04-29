@@ -1,1 +1,0 @@
-console.log('Component2 set');

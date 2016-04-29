@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server",
+    "start": "npm run dev",
+    "build": "webpack",
+    "dev": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,7 +14,9 @@
   "license": "ISC",
   "devDependencies": {
     "coffee-script": "^1.10.0",
+    "html-webpack-plugin": "^2.16.0",
     "webpack": "^1.13.0",
-    "webpack-dev-server": "^1.14.1"
+    "webpack-dev-server": "^1.14.1",
+    "webpack-validator": "^1.1.0"
   }
 }

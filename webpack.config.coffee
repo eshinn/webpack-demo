@@ -1,14 +1,52 @@
+webpack = require 'webpack'
+HtmlWebPackPlugin = require 'html-webpack-plugin'
+validate = require 'webpack-validator'
 
-module.exports =
-  context: "#{__dirname}"
-  entry:
-    app: './src/index.js'
-  output:
-    path: './dist/js'
-    filename: '[name].bundle.js'
-    publicPath: '/js'
+TARGET = process.env.npm_lifecycle_event
+PATHS =
+  app: "#{__dirname}/app"
+  build: "#{__dirname}/build"
 
-  devtool: 'inline-source-map'
-  devServer:
-    contentBase: './build'
-  debug: true
+BUILD =
+
+  common:
+
+    entry:
+      app: PATHS.app
+
+    output:
+      path: PATHS.build
+      filename: '[name].js'
+
+    plugins: [
+      new HtmlWebPackPlugin title: 'Webpack demo'
+      
+      if TARGET is 'dev'
+        new webpack.HotModuleReplacementPlugin multiStep: true
+    ]
+
+
+  dev:
+
+    devServer:
+      historyApiFallback: true
+      hot: true
+      inline: true
+      progress: true
+      stats: 'errors-only'
+      host:
+        process.env.HOST
+      port:
+        process.env.PORT
+
+
+  prod:
+
+    {}
+
+
+
+#module.exports = validate build TARGET
+do ({common, "#{TARGET}": target} = BUILD) ->
+  target[key] = val for key, val of common
+  module.exports = validate target
